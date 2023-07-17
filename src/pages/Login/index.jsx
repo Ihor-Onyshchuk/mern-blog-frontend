@@ -5,10 +5,11 @@ import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
+import { Navigate } from 'react-router-dom';
 
 import { fetchAuth, selectIsAuth } from '../../redux/slices/auth';
+
 import styles from './Login.module.scss';
-import { Navigate } from 'react-router-dom';
 
 export const Login = () => {
   const dispatch = useDispatch();
@@ -17,8 +18,7 @@ export const Login = () => {
   const {
     register,
     handleSubmit,
-    setError,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm({
     defaultValues: {
       email: 'McFly12@mail.com',
@@ -34,7 +34,7 @@ export const Login = () => {
         return window.localStorage.setItem('token', data.payload.token);
       }
     } catch (error) {
-      return alert('Somethind went wrong', error);
+      return alert('Something went wrong', error);
     }
 
     return alert('Login faild');
