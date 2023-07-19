@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { fetchRegister, selectIsAuth } from '../../redux/slices/auth';
 
-import styles from './Login.module.scss';
+import styles from './Registration.module.scss';
 
 export const Registration = () => {
   const dispatch = useDispatch();
