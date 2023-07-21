@@ -52,7 +52,7 @@ export const AddPost = () => {
       const fields = {
         text,
         title,
-        tags: tags.split(','),
+        tags,
         imageUrl,
       };
 
@@ -62,6 +62,7 @@ export const AddPost = () => {
 
       navigate(`/posts/${id}`);
     } catch (error) {
+      setIsLoading(false);
       console.warn(error);
       alert('Publishing Failed!');
     }
@@ -138,11 +139,18 @@ export const AddPost = () => {
         options={options}
       />
       <div className={styles.buttons}>
-        <Button size='large' variant='contained' onClick={onSubmit} disabled={isLoading}>
+        <Button
+          size='large'
+          variant='contained'
+          onClick={onSubmit}
+          disabled={isLoading}
+        >
           Publish
         </Button>
         <a href='/'>
-          <Button size='large' disabled={isLoading}>Cancel</Button>
+          <Button size='large' disabled={isLoading}>
+            Cancel
+          </Button>
         </a>
       </div>
     </Paper>
