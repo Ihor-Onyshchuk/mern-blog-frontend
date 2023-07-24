@@ -2,7 +2,7 @@ import React from 'react';
 import Paper from '@mui/material/Paper';
 import { useSelector } from 'react-redux';
 import Button from '@mui/material/Button';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import SimpleMDE from 'react-simplemde-editor';
 import TextField from '@mui/material/TextField';
 
@@ -12,6 +12,7 @@ import 'easymde/dist/easymde.min.css';
 import styles from './AddPost.module.scss';
 
 export const AddPost = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
   const authState = useSelector((state) => state.auth);
 
@@ -22,6 +23,30 @@ export const AddPost = () => {
   const [tags, setTags] = React.useState('');
   const [imageUrl, setImageUrl] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
+
+  const isEditMode = Boolean(id);
+
+  React.useEffect(() => {
+    if (isEditMode) {
+      console.log(id, 'postId2');
+
+      const getPost = async () => {
+        try {
+          const { data } = await axios.get(`/posts/${id}`);
+
+          setText(data.text);
+          setTitle(data.title);
+          setTags(data.tags.join(','));
+          setImageUrl(data.imageUrl);
+        } catch (error) {
+          console.warn(error);
+          alert('Can not get the post!');
+        }
+      };
+
+      getPost();
+    }
+  }, []);
 
   const handleChangeFile = async (event) => {
     try {
@@ -56,11 +81,13 @@ export const AddPost = () => {
         imageUrl,
       };
 
-      const { data } = await axios.post('/posts', fields);
+      const { data } = isEditMode
+        ? await axios.patch(`/posts/${id}`, fields)
+        : await axios.post('/posts', fields);
 
-      const id = data._id;
+      const postId = isEditMode ? id : data._id;
 
-      navigate(`/posts/${id}`);
+      navigate(`/posts/${postId}`);
     } catch (error) {
       setIsLoading(false);
       console.warn(error);
@@ -145,7 +172,7 @@ export const AddPost = () => {
           onClick={onSubmit}
           disabled={isLoading}
         >
-          Publish
+          {isEditMode ? 'Save' : 'Publish'}
         </Button>
         <a href='/'>
           <Button size='large' disabled={isLoading}>
