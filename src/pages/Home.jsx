@@ -11,19 +11,43 @@ import { selectIsAuth } from '../redux/slices/auth';
 import { CommentsBlock } from '../components/CommentsBlock';
 import { fetchPosts, fetchTags } from '../redux/slices/posts';
 
+const postSortingMap = {
+  new: {
+    key: 'new',
+    value: 'createdAt',
+  },
+  popular: {
+    key: 'popular',
+    value: 'viewsCount',
+  },
+};
+
 export const Home = () => {
   const dispatch = useDispatch();
   const isAuth = useSelector(selectIsAuth);
   const userData = useSelector((state) => state.auth.data);
   const { posts, tags } = useSelector((state) => state.posts);
 
+  const [activeTab, setActiveTab] = React.useState(postSortingMap.new.value);
+
   const isPostsLoading = posts.status === 'loading';
   const isTagsLoading = tags.status === 'loading';
 
   React.useEffect(() => {
-    dispatch(fetchPosts());
-    dispatch(fetchTags());
-  }, []);
+    if (isAuth) {
+      dispatch(fetchTags());
+    }
+  }, [isAuth]);
+
+  React.useEffect(() => {
+    if (isAuth) {
+      dispatch(fetchPosts(`?sort=${activeTab}`));
+    }
+  }, [activeTab, isAuth]);
+
+  const onTabChange = (event, newValue) => {
+    setActiveTab(newValue);
+  };
 
   if (!isAuth) {
     return <Navigate to='/login' />;
@@ -33,11 +57,15 @@ export const Home = () => {
     <>
       <Tabs
         style={{ marginBottom: 15 }}
-        value={0}
-        aria-label='basic tabs example'
+        value={activeTab}
+        onChange={onTabChange}
+        aria-label='post sorting tabs'
       >
-        <Tab label='new' />
-        <Tab label='popular' />
+        <Tab label={postSortingMap.new.key} value={postSortingMap.new.value} />
+        <Tab
+          label={postSortingMap.popular.key}
+          value={postSortingMap.popular.value}
+        />
       </Tabs>
       <Grid container spacing={4}>
         <Grid xs={8} item>

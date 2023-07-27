@@ -28,8 +28,6 @@ export const AddPost = () => {
 
   React.useEffect(() => {
     if (isEditMode) {
-      console.log(id, 'postId2');
-
       const getPost = async () => {
         try {
           const { data } = await axios.get(`/posts/${id}`);
